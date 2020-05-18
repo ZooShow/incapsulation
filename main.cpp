@@ -28,7 +28,7 @@ public:
         speed += 10;
     }
 
-    void go_to_gas_station(int money){ //Инкапсуляция с помощью специализированных протоколов/методов
+    void add_gasoline(int money){ //Инкапсуляция с помощью специализированных протоколов/методов
         if (countOfGas <= 100){
             countOfGas += money / 54.36;
         } else {
@@ -37,19 +37,17 @@ public:
     }
 };
 
-class TurikVeshka: public Car{ //Инкапсуляция за счёт абстракций
+class TurikVeshka: public Car{
     bool turbine;
 public:
     TurikVeshka(string typeOfCar, bool turbine) : Car(typeOfCar) {
-        if (typeOfCar != "chaser"){
-            throw "Ne ta tachila, bratan";
-        }
+        this-> typeOfCar = typeOfCar;
         countOfGas = 10;
         speed = 0;
         this->turbine = turbine;
     }
 
-    virtual void go_to_gas_station(int money){ //За счёт позднего связывания
+    virtual void add_gasoline(int money){ //За счёт позднего связывания
         if (countOfGas <= 150){
             countOfGas += money / 55.12;
         } else{
@@ -66,6 +64,44 @@ public:
     }
 };
 
+void go_to_gas_station(Car &car, unsigned int money){
+    car.add_gasoline(money);
+}
+
 int main(){
+    try{
+        string answer;
+        cout << "Are you living in Vladivostok? (y/n)" << endl;
+        cin >> answer;
+        if (answer == "y"){
+            cout << "vot tachka s turbinoy" << endl;
+            TurikVeshka *car = new TurikVeshka("mark II", true);
+            cout << "your car: " << car->typeOfCar<< endl;
+            cout << "ti nazhal nemnogo na gaz i tvoya skorost' = ";
+            car->press_on_the_gas();
+            cout << car->get_speed() << endl;
+            cout << "est' turbina? ";
+            if (car->isTurbineHere() == 1){
+                cout << "yes" << endl;
+            } else {
+                cout << "nop" << endl;
+            }
+            go_to_gas_station(*car, 1500);
+            cout << "gaz status: " << car->get_count_of_gas() << endl;
+        } else {
+            cout << "vot tachka bez turbini" << endl;
+            Car *car = new Car("prius");
+            cout << "your car: " << car->typeOfCar<< endl;
+            cout << "ti nazhal nemnogo na gaz i tvoya skorost' = ";
+            car->press_on_the_gas();
+            cout << car->get_speed() << endl;
+            cout << "est' turbina? ";
+            cout << "nop" << endl;
+            go_to_gas_station(*car, 1500);
+            cout << "gaz status: " << car->get_count_of_gas() << endl;
+        }
+    } catch(string a) {
+        cout << a << endl;
+    }
     return 0;
 }
